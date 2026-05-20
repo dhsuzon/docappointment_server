@@ -28,8 +28,14 @@ async function run() {
 
         // top 3 rating doctor appoint 
         app.get("/api/doctors/top", async(req, res) => {
-            const alldoctoraApp = await docAppointCollection.find().sort({ rating: -1 }).limit(3).toArray();
-            res.json(alldoctoraApp)
+                const TopdoctoraAppoint = await docAppointCollection.find().sort({ rating: -1 }).limit(3).toArray();
+                res.json(TopdoctoraAppoint);
+
+            })
+            // get all Doctor appoint
+        app.get("/api/doctors/all", async(req, res) => {
+            const alldoctoraAppoint = await docAppointCollection.find().toArray();
+            res.json(alldoctoraAppoint);
         })
 
 
