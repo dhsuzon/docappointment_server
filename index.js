@@ -25,6 +25,15 @@ async function run() {
         const docAppointDB = client.db("docAppiontDB");
         const docAppointCollection = docAppointDB.collection("docAppointCollection")
 
+
+        // top 3 rating doctor appoint 
+        app.get("/api/doctors/top", async(req, res) => {
+            const alldoctoraApp = await docAppointCollection.find().sort({ rating: -1 }).limit(3).toArray();
+            res.json(alldoctoraApp)
+        })
+
+
+
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
