@@ -45,6 +45,15 @@ async function run() {
             res.json(alldoctoraAppoint);
         })
 
+        // search doctor by name
+        app.get("/api/doctors/search", async(req, res) => {
+            const searchName = req.query.name || "";
+            const searchResult = await docAppointCollection.find({
+                name: { $regex: searchName, $options: "i" }
+            }).toArray();
+            res.json(searchResult);
+        })
+
         // get Single Doctor appoint
         app.get("/api/doctors/:id", async(req, res) => {
             const singDocAppointId = new ObjectId(req.params.id)
