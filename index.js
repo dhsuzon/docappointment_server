@@ -5,7 +5,12 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 
 const app = express();;
-app.use(cors());
+const corsOptions = {
+    origin: process.env.CLIENT_URL,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 const port = process.env.PORT || 9000;
 const uri = process.env.DB_URL;
@@ -104,7 +109,7 @@ run().catch(console.dir);
 
 
 app.get("/", (req, res) => {
-    res.send("hellow");
+    res.json({ status: "ok", message: "DocAppoint server is running" });
 });
 
 app.listen(port, () => {
