@@ -6,6 +6,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 const app = express();;
 app.use(cors());
+app.use(express.json());
 const port = process.env.PORT || 9000;
 const uri = process.env.DB_URL;
 
@@ -24,6 +25,7 @@ async function run() {
         await client.connect();
         const docAppointDB = client.db("docAppiontDB");
         const docAppointCollection = docAppointDB.collection("docAppointCollection")
+        const userAppointCollection = docAppointDB.collection("userAppointCollection")
 
 
         // top 3 rating doctor appoint 
@@ -44,6 +46,16 @@ async function run() {
             const singleDocAppointResult = await docAppointCollection.findOne({ _id: singDocAppointId })
 
             res.json(singleDocAppointResult);
+        })
+
+        // booking appointentment
+        app.post("/api/user/appointment/create", async(req, res) => {
+
+            const AppInsInfo = req.body;
+            const inserResult = await userAppointCollection.insertOne({ AppInsInfo });
+            res.json(inserResult);
+
+
         })
 
 
