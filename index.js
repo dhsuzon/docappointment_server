@@ -51,12 +51,44 @@ async function run() {
         // booking appointentment
         app.post("/api/user/appointment/create", async(req, res) => {
 
-            const AppInsInfo = req.body;
-            const inserResult = await userAppointCollection.insertOne({ AppInsInfo });
-            res.json(inserResult);
+                const AppInsInfo = req.body;
+                const inserResult = await userAppointCollection.insertOne({ AppInsInfo });
+                res.json(inserResult);
 
 
+            })
+            // geit all booking appoinments
+        app.get("/api/user/appointment/all", async(req, res) => {
+            const bookingAppiont = await userAppointCollection.find().toArray();
+            res.json(bookingAppiont)
+            console.log(bookingAppiont)
         })
+
+        // get booking appointments by user email
+        app.get("/api/user/appointment", async(req, res) => {
+            const userEmail = req.query.email;
+            const userBookings = await userAppointCollection.find({ "AppInsInfo.useremail": userEmail }).toArray();
+            res.json(userBookings);
+        })
+
+        // update booking appointment
+        app.put("/api/user/appointment/:id", async(req, res) => {
+            const appointId = new ObjectId(req.params.id);
+            const updatedInfo = req.body;
+            const updateResult = await userAppointCollection.updateOne(
+                { _id: appointId },
+                { $set: { AppInsInfo: updatedInfo } }
+            );
+            res.json(updateResult);
+        })
+
+        // delete booking appointment
+        app.delete("/api/user/appointment/:id", async(req, res) => {
+            const appointId = new ObjectId(req.params.id);
+            const deleteResult = await userAppointCollection.deleteOne({ _id: appointId });
+            res.json(deleteResult);
+        })
+
 
 
 
