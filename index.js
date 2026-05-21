@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require('cors');
 const dotenv = require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 
 const app = express();;
@@ -36,6 +36,14 @@ async function run() {
         app.get("/api/doctors/all", async(req, res) => {
             const alldoctoraAppoint = await docAppointCollection.find().toArray();
             res.json(alldoctoraAppoint);
+        })
+
+        // get Single Doctor appoint
+        app.get("/api/doctors/:id", async(req, res) => {
+            const singDocAppointId = new ObjectId(req.params.id)
+            const singleDocAppointResult = await docAppointCollection.findOne({ _id: singDocAppointId })
+
+            res.json(singleDocAppointResult);
         })
 
 
