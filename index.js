@@ -6,12 +6,7 @@ const { createRemoteJWKSet, jwtVerify } = require("jose-cjs");
 
 
 const app = express();;
-const corsOptions = {
-    origin: process.env.CLIENT_URL,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-};
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 const port = process.env.PORT || 9000;
 const uri = process.env.DB_URL;
