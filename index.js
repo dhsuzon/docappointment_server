@@ -28,13 +28,13 @@ const client = new MongoClient(uri, {
 const JWKS = createRemoteJWKSet(new URL(`${process.env.CLIENT_URL}/api/auth/jwks`))
 
 const userCheckMidleware = async(req, res, next) => {
-    const authHeader = req.headers.authoraization;
-    const token = authHeader.split(' ')[1];
+    const authHeader = req.headers.authorization;
     if (!authHeader) {
-        return res.status(401).json({ message: "Unauthoraizated" });
+        return res.status(401).json({ message: "Unauthoraizated Login Required" });
     };
+    const token = authHeader.split(' ')[1];
     if (!token) {
-        return res.status(401).json({ message: "Unauthoraizated" });
+        return res.status(401).json({ message: "Unauthoraizated Login Required" });
     };
     try {
         const { payload } = await jwtVerify(token, JWKS);
@@ -50,7 +50,7 @@ const userCheckMidleware = async(req, res, next) => {
 async function run() {
     try {
 
-        await client.connect();
+        // await client.connect();
         const docAppointDB = client.db("docAppiontDB");
         const docAppointCollection = docAppointDB.collection("docAppointCollection")
         const userAppointCollection = docAppointDB.collection("userAppointCollection")
@@ -126,7 +126,7 @@ async function run() {
         })
 
 
-        await client.db("admin").command({ ping: 1 });
+        // await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // await client.close();
