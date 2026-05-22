@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require('cors');
 const dotenv = require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { createRemoteJWKSet, jwtVerify } = require("jose-cjs");
 
 
 const app = express();;
@@ -24,6 +25,28 @@ const client = new MongoClient(uri, {
     }
 });
 
+const JWKS = createRemoteJWKSet(new URL(`${process.env.CLIENT_URL}/api/auth/jwks`))
+
+const userCheckMidleware = async(req, res, next) => {
+    const authHeader = req.headers.authoraization;
+    const token = authHeader.split(' ')[1];
+    if (!authHeader) {
+        return res.status(401).json({ message: "Unauthoraizated" });
+    };
+    if (!token) {
+        return res.status(401).json({ message: "Unauthoraizated" });
+    };
+    try {
+        const { payload } = await jwtVerify(token, JWKS);
+        next();
+    } catch (error) {
+        return res.status(403).json({ message: "Forbiden" });
+    };
+
+
+
+}
+
 async function run() {
     try {
 
@@ -31,6 +54,8 @@ async function run() {
         const docAppointDB = client.db("docAppiontDB");
         const docAppointCollection = docAppointDB.collection("docAppointCollection")
         const userAppointCollection = docAppointDB.collection("userAppointCollection")
+
+
 
 
         // top 3 rating doctor appoint 
@@ -55,7 +80,7 @@ async function run() {
         })
 
         // get Single Doctor appoint
-        app.get("/api/doctors/:id", async(req, res) => {
+        app.get("/api/doctors/:id", userCheckMidleware, async(req, res) => {
             const singDocAppointId = new ObjectId(req.params.id)
             const singleDocAppointResult = await docAppointCollection.findOne({ _id: singDocAppointId })
 
@@ -86,24 +111,19 @@ async function run() {
         })
 
         // update booking appointment
-        app.put("/api/user/appointment/:id", async(req, res) => {
+        app.put("/api/user/appointment/:id", userCheckMidleware, async(req, res) => {
             const appointId = new ObjectId(req.params.id);
             const updatedInfo = req.body;
-            const updateResult = await userAppointCollection.updateOne(
-                { _id: appointId },
-                { $set: { AppInsInfo: updatedInfo } }
-            );
+            const updateResult = await userAppointCollection.updateOne({ _id: appointId }, { $set: { AppInsInfo: updatedInfo } });
             res.json(updateResult);
         })
 
         // delete booking appointment
-        app.delete("/api/user/appointment/:id", async(req, res) => {
+        app.delete("/api/user/appointment/:id", userCheckMidleware, async(req, res) => {
             const appointId = new ObjectId(req.params.id);
             const deleteResult = await userAppointCollection.deleteOne({ _id: appointId });
             res.json(deleteResult);
         })
-
-
 
 
         await client.db("admin").command({ ping: 1 });
