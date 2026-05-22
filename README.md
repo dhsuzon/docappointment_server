@@ -3,8 +3,10 @@
 Backend REST API for the DocAppoint doctor appointment booking system. Built with Node.js, Express, and MongoDB Atlas.
 
 ## Live Server
+[https://docappointment-server-gules.vercel.app](https://docappointment-server-gules.vercel.app)
 
 Update `CLIENT_URL` in your environment to point to the deployed frontend URL.
+
 
 ## Features
 
